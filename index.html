@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gaurav Kumar - Creative Developer</title>
+    <title>Gaurav Kumar - Software Developer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -24,14 +25,14 @@
             cursor: none;
         }
 
-        /* Loader Styles */
+        /* Enhanced Loader Styles */
         .loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
             z-index: 10000;
             display: flex;
             align-items: center;
@@ -39,31 +40,57 @@
             flex-direction: column;
         }
 
+        .loader-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .loader-santa {
             position: relative;
             margin-bottom: 50px;
+            transform: scale(1.2);
         }
 
         .loader-santa-character {
             width: 150px;
             height: 200px;
             position: relative;
-            animation: santaFloat 3s ease-in-out infinite;
+            animation: santaFloatAdvanced 4s ease-in-out infinite;
         }
 
-        @keyframes santaFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+        @keyframes santaFloatAdvanced {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+            }
+            25% { 
+                transform: translateY(-15px) rotate(2deg); 
+            }
+            50% { 
+                transform: translateY(-25px) rotate(0deg); 
+            }
+            75% { 
+                transform: translateY(-15px) rotate(-2deg); 
+            }
         }
 
         .loader-santa-body {
             width: 90px;
             height: 130px;
-            background: linear-gradient(145deg, #dc143c, #b91c3c);
+            background: linear-gradient(145deg, #dc143c, #b91c3c, #8b0000);
             border-radius: 45px 45px 25px 25px;
             position: relative;
             margin: 0 auto;
-            box-shadow: 0 15px 30px rgba(220, 20, 60, 0.4);
+            box-shadow: 0 20px 40px rgba(220, 20, 60, 0.5);
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .loader-santa-head {
@@ -75,7 +102,7 @@
             top: -30px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
         .loader-santa-hat {
@@ -87,7 +114,13 @@
             top: -40px;
             left: 50%;
             transform: translateX(-50%) rotate(-15deg);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+            animation: hatWiggle 2s ease-in-out infinite;
+        }
+
+        @keyframes hatWiggle {
+            0%, 100% { transform: translateX(-50%) rotate(-15deg); }
+            50% { transform: translateX(-50%) rotate(-18deg); }
         }
 
         .loader-santa-hat::after {
@@ -99,7 +132,13 @@
             position: absolute;
             top: -8px;
             right: -3px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            animation: pompomBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pompomBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         .loader-santa-beard {
@@ -111,6 +150,7 @@
             bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
         }
 
         .loader-santa-belt {
@@ -120,18 +160,26 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .loader-santa-belt::after {
             content: '';
             width: 15px;
             height: 15px;
-            background: gold;
+            background: linear-gradient(145deg, gold, #ffd700);
             border-radius: 2px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            animation: beltShine 2s ease-in-out infinite;
+        }
+
+        @keyframes beltShine {
+            0%, 100% { box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 2px 15px rgba(255, 215, 0, 0.6); }
         }
 
         .loader-santa-arms {
@@ -141,37 +189,50 @@
             border-radius: 15px;
             position: absolute;
             top: 30px;
+            animation: armWave 3s ease-in-out infinite;
+        }
+
+        @keyframes armWave {
+            0%, 100% { transform: rotate(-20deg); }
+            50% { transform: rotate(-10deg); }
         }
 
         .loader-santa-arms.left {
             left: -15px;
-            transform: rotate(-20deg);
         }
 
         .loader-santa-arms.right {
             right: -15px;
-            transform: rotate(20deg);
+            animation-name: armWaveRight;
         }
 
-        /* String Animation */
+        @keyframes armWaveRight {
+            0%, 100% { transform: rotate(20deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        /* Enhanced String Animation */
         .gift-string {
             position: absolute;
             top: 100%;
             left: 50%;
             width: 3px;
             height: 200px;
-            background: linear-gradient(to bottom, #8b4513, #654321);
+            background: linear-gradient(to bottom, #8b4513, #654321, #4a2c17);
             transform: translateX(-50%);
             transform-origin: top center;
-            animation: stringSwing 2s ease-in-out infinite;
+            animation: stringSwingAdvanced 3s ease-in-out infinite;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes stringSwing {
+        @keyframes stringSwingAdvanced {
             0%, 100% { transform: translateX(-50%) rotate(0deg); }
-            50% { transform: translateX(-50%) rotate(5deg); }
+            25% { transform: translateX(-50%) rotate(3deg); }
+            50% { transform: translateX(-50%) rotate(0deg); }
+            75% { transform: translateX(-50%) rotate(-3deg); }
         }
 
-        /* Loader Gift */
+        /* Enhanced Loader Gift */
         .loader-gift {
             position: absolute;
             bottom: -60px;
@@ -179,37 +240,41 @@
             transform: translateX(-50%);
             width: 60px;
             height: 60px;
-            background: linear-gradient(145deg, #ff6b35, #f7931e);
+            background: linear-gradient(145deg, #ff6b35, #f7931e, #e67e22);
             border-radius: 8px;
-            animation: giftSwing 2s ease-in-out infinite;
-            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.4);
+            animation: giftSwingAdvanced 3s ease-in-out infinite;
+            box-shadow: 0 15px 30px rgba(255, 107, 53, 0.5);
         }
 
-        @keyframes giftSwing {
-            0%, 100% { transform: translateX(-50%) rotate(0deg); }
-            50% { transform: translateX(-50%) rotate(5deg); }
+        @keyframes giftSwingAdvanced {
+            0%, 100% { transform: translateX(-50%) rotate(0deg) scale(1); }
+            25% { transform: translateX(-50%) rotate(3deg) scale(1.05); }
+            50% { transform: translateX(-50%) rotate(0deg) scale(1); }
+            75% { transform: translateX(-50%) rotate(-3deg) scale(1.05); }
         }
 
         .loader-gift::before {
             content: '';
             width: 100%;
             height: 6px;
-            background: gold;
+            background: linear-gradient(90deg, gold, #ffd700);
             position: absolute;
             top: 50%;
             left: 0;
             transform: translateY(-50%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .loader-gift::after {
             content: '';
             width: 6px;
             height: 100%;
-            background: gold;
+            background: linear-gradient(180deg, gold, #ffd700);
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
         }
 
         .loader-gift-bow {
@@ -221,6 +286,12 @@
             top: -6px;
             left: 50%;
             transform: translateX(-50%);
+            animation: bowBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bowBounce {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
         }
 
         .loader-gift-bow::before,
@@ -242,43 +313,69 @@
             right: -6px;
         }
 
-        /* Loading Text */
+        /* Enhanced Loading Text */
         .loader-text {
-            font-size: 2rem;
-            font-weight: 300;
+            font-size: 2.5rem;
+            font-weight: 400;
             color: white;
             text-align: center;
-            opacity: 0.8;
-            animation: textPulse 2s ease-in-out infinite;
+            opacity: 0.9;
+            animation: textPulseAdvanced 2s ease-in-out infinite;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
         }
 
-        @keyframes textPulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
+        @keyframes textPulseAdvanced {
+            0%, 100% { 
+                opacity: 0.7; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.05);
+            }
         }
 
+        /* Enhanced Progress Bar */
         .loader-progress {
-            width: 300px;
-            height: 4px;
+            width: 400px;
+            height: 6px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-top: 30px;
+            border-radius: 3px;
+            margin-top: 40px;
             overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .loader-progress-bar {
             width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, #ff6b35, #f7931e);
-            border-radius: 2px;
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, #ff6b35, #f7931e, #e67e22);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+            animation: progressGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.8); }
+        }
+
+        /* Percentage Display */
+        .loader-percentage {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 15px;
+            opacity: 0.8;
         }
 
         /* Hide loader when loaded */
         .loader.loaded {
             opacity: 0;
             visibility: hidden;
-            transition: all 1s ease;
+            transition: all 1.5s ease;
         }
 
         /* Custom Cursor */
@@ -305,12 +402,12 @@
             transition: all 0.15s ease;
         }
 
-        /* Navigation */
+        /* Enhanced Navigation */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 20px 5%;
+            padding: 25px 5%;
             z-index: 1000;
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
@@ -327,7 +424,7 @@
         }
 
         .logo {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
             background: linear-gradient(135deg, #ff6b35, #f7931e);
             -webkit-background-clip: text;
@@ -348,7 +445,8 @@
             font-size: 16px;
             transition: all 0.4s ease;
             position: relative;
-            padding: 10px 0;
+            padding: 12px 0;
+            cursor: pointer;
         }
 
         .nav-menu a:hover {
@@ -372,7 +470,7 @@
             width: 100%;
         }
 
-        /* Hero Section */
+        /* Hero Section - Fixed overlap */
         .hero {
             height: 100vh;
             display: flex;
@@ -381,6 +479,7 @@
             position: relative;
             overflow: hidden;
             background: radial-gradient(ellipse at center, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+            padding-top: 100px; /* Added padding to prevent navbar overlap */
         }
 
         .hero-content {
@@ -422,9 +521,14 @@
             width: 200px;
             height: 250px;
             position: relative;
-            cursor: pointer;
+            cursor: grab;
             transition: all 0.3s ease;
             user-select: none;
+            touch-action: none;
+        }
+
+        .santa-character:active {
+            cursor: grabbing;
         }
 
         .santa-body {
@@ -851,7 +955,7 @@
         /* Sections */
         .section {
             min-height: 100vh;
-            padding: 100px 5%;
+            padding: 120px 5% 100px 5%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1008,7 +1112,7 @@
             }
             
             .section {
-                padding: 80px 5%;
+                padding: 100px 5% 80px 5%;
             }
             
             .projects-grid {
@@ -1023,32 +1127,43 @@
                 flex-direction: column;
                 gap: 10px;
             }
+
+            .loader-progress {
+                width: 300px;
+            }
+
+            .loader-text {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Loader -->
+    <!-- Enhanced Loader -->
     <div class="loader" id="loader">
-        <div class="loader-santa">
-            <div class="loader-santa-character">
-                <div class="loader-santa-head"></div>
-                <div class="loader-santa-hat"></div>
-                <div class="loader-santa-body">
-                    <div class="loader-santa-beard"></div>
-                    <div class="loader-santa-belt"></div>
+        <div class="loader-container">
+            <div class="loader-santa">
+                <div class="loader-santa-character">
+                    <div class="loader-santa-head"></div>
+                    <div class="loader-santa-hat"></div>
+                    <div class="loader-santa-body">
+                        <div class="loader-santa-beard"></div>
+                        <div class="loader-santa-belt"></div>
+                    </div>
+                    <div class="loader-santa-arms left"></div>
+                    <div class="loader-santa-arms right"></div>
                 </div>
-                <div class="loader-santa-arms left"></div>
-                <div class="loader-santa-arms right"></div>
-            </div>
-            <div class="gift-string"></div>
-            <div class="loader-gift">
-                <div class="loader-gift-bow"></div>
+                <div class="gift-string"></div>
+                <div class="loader-gift">
+                    <div class="loader-gift-bow"></div>
+                </div>
             </div>
         </div>
-        <div class="loader-text">Loading Magic...</div>
+        <div class="loader-text">Loading Experience...</div>
         <div class="loader-progress">
             <div class="loader-progress-bar" id="progressBar"></div>
         </div>
+        <div class="loader-percentage" id="percentage">0%</div>
     </div>
 
     <div class="cursor"></div>
@@ -1059,10 +1174,11 @@
         <div class="nav-container">
             <div class="logo">Gaurav Kumar</div>
             <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#home" data-section="home">Home</a></li>
+                <li><a href="#about" data-section="about">About</a></li>
+                <li><a href="#projects" data-section="projects">Projects</a></li>
+                <li><a href="#skills" data-section="skills">Skills</a></li>
+                <li><a href="#contact" data-section="contact">Contact</a></li>
                 <li><a href="#" class="resume-link">Resume</a></li>
             </ul>
         </div>
@@ -1095,7 +1211,7 @@
                     <div class="gift-bow"></div>
                 </div>
                 
-                <p class="shake-instruction">Shake Santa to get your special gift! 🎁</p>
+                <p class="shake-instruction">Drag and shake Image so badly to drop special gift!</p>
             </div>
         </div>
     </section>
@@ -1422,99 +1538,63 @@
 
     <script>
         // Register GSAP plugins
-        gsap.registerPlugin(ScrollTrigger);
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
         // Variables
-        let scene, camera, renderer, particles;
+        let scene, camera, renderer, particles, particleGeometry;
         let shakeCount = 0;
         let isGiftClicked = false;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let santaStartX = 0;
+        let santaStartY = 0;
+        let velocity = { x: 0, y: 0 };
+        let dragDistance = 0;
+
         const santa = document.getElementById('santaCharacter');
         const giftBox = document.getElementById('giftBox');
         const resumeModal = document.getElementById('resumeModal');
         const loader = document.getElementById('loader');
         const progressBar = document.getElementById('progressBar');
+        const percentage = document.getElementById('percentage');
 
-        // Loader functionality
-        function initLoader() {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(hideLoader, 500);
-                }
-                progressBar.style.width = progress + '%';
-            }, 200);
-        }
-
-        function hideLoader() {
-            gsap.to(loader, {
-                opacity: 0,
-                duration: 1,
-                ease: 'power2.inOut',
-                onComplete: () => {
-                    loader.style.display = 'none';
-                    initMainAnimations();
-                }
-            });
-        }
-
-        function initMainAnimations() {
-            // Animate navigation
-            gsap.to('#navbar', {
-                y: 0,
-                duration: 1,
-                ease: 'power3.out'
-            });
-
-            // Animate hero content
-            gsap.to('#heroContent', {
-                opacity: 1,
-                y: 0,
-                duration: 1.5,
-                ease: 'power3.out',
-                delay: 0.3
-            });
-
-            // Initialize all other animations
-            setupScrollAnimations();
-        }
-
-        // Three.js Background Setup
+        // Three.js initialization function - FIXED
         function initThreeJS() {
+            // Scene setup
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ 
-                canvas: document.getElementById('three-canvas'), 
+                canvas: document.getElementById('three-canvas'),
                 alpha: true,
                 antialias: true 
             });
+            
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // Create floating particles
-            const particleGeometry = new THREE.BufferGeometry();
-            const particleCount = 1500;
-            const posArray = new Float32Array(particleCount * 3);
-            const colorArray = new Float32Array(particleCount * 3);
+            // Create particle system
+            const particleCount = 800;
+            particleGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
 
             for (let i = 0; i < particleCount * 3; i += 3) {
                 // Position
-                posArray[i] = (Math.random() - 0.5) * 50;
-                posArray[i + 1] = (Math.random() - 0.5) * 50;
-                posArray[i + 2] = (Math.random() - 0.5) * 50;
+                positions[i] = (Math.random() - 0.5) * 20;
+                positions[i + 1] = (Math.random() - 0.5) * 20;
+                positions[i + 2] = (Math.random() - 0.5) * 20;
 
-                // Color (orange theme)
+                // Colors
                 const color = new THREE.Color();
-                color.setHSL(Math.random() * 0.1 + 0.05, 0.7, 0.5 + Math.random() * 0.3);
-                colorArray[i] = color.r;
-                colorArray[i + 1] = color.g;
-                colorArray[i + 2] = color.b;
+                color.setHSL(Math.random() * 0.1 + 0.05, 0.7, 0.5); // Orange-ish colors
+                colors[i] = color.r;
+                colors[i + 1] = color.g;
+                colors[i + 2] = color.b;
             }
 
-            particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
             const particleMaterial = new THREE.PointsMaterial({
                 size: 0.02,
@@ -1527,6 +1607,45 @@
             particles = new THREE.Points(particleGeometry, particleMaterial);
             scene.add(particles);
             camera.position.z = 5;
+        }
+
+        // Enhanced Loader functionality
+        function initLoader() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loader.classList.add('loaded');
+                        initPageAnimations();
+                    }, 500);
+                }
+                progressBar.style.width = progress + '%';
+                percentage.textContent = Math.floor(progress) + '%';
+            }, 200);
+        }
+
+        function initPageAnimations() {
+            // Animate navigation
+            gsap.to('#navbar', {
+                y: 0,
+                duration: 1,
+                ease: 'power3.out',
+                delay: 0.5
+            });
+
+            // Animate hero content
+            gsap.to('#heroContent', {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                ease: 'power3.out',
+                delay: 0.8
+            });
+
+            setupScrollAnimations();
         }
 
         function animateThreeJS() {
@@ -1571,41 +1690,150 @@
             });
         });
 
-        // Santa Shake Animation - Fixed to prevent event propagation issues
-        santa.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            shakeCount++;
-            
-            // Shake animation
-            gsap.to(santa, {
-                x: '+=20',
-                duration: 0.1,
-                repeat: 5,
-                yoyo: true,
-                ease: 'power2.inOut',
-                onComplete: () => {
-                    gsap.set(santa, { x: 0 });
-                }
-            });
+        // Enhanced Santa Draggable Physics System
+        santa.addEventListener('mousedown', startDrag);
+        santa.addEventListener('touchstart', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
 
-            // Bounce effect
+        function startDrag(e) {
+            e.preventDefault();
+            isDragging = true;
+            
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            dragStartX = clientX;
+            dragStartY = clientY;
+            
+            const santaRect = santa.getBoundingClientRect();
+            santaStartX = santaRect.left + santaRect.width / 2;
+            santaStartY = santaRect.top + santaRect.height / 2;
+            
+            // Stop any ongoing animations
+            gsap.killTweensOf(santa);
+            
+            // Visual feedback for drag start
             gsap.to(santa, {
-                y: -10,
-                duration: 0.3,
-                repeat: 1,
-                yoyo: true,
+                scale: 1.1,
+                duration: 0.2,
                 ease: 'power2.out'
             });
+        }
 
-            // After 3 shakes, drop the gift
-            if (shakeCount >= 3) {
-                setTimeout(() => {
-                    dropGift();
-                }, 500);
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            const deltaX = clientX - dragStartX;
+            const deltaY = clientY - dragStartY;
+            
+            // Calculate drag distance for shake detection
+            dragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            // Update velocity for physics
+            velocity.x = deltaX * 0.1;
+            velocity.y = deltaY * 0.1;
+            
+            // Apply drag transform with constraints
+            const maxDrag = 120;
+            const constrainedX = Math.max(-maxDrag, Math.min(maxDrag, deltaX));
+            const constrainedY = Math.max(-maxDrag, Math.min(maxDrag, deltaY));
+            
+            gsap.set(santa, {
+                x: constrainedX,
+                y: constrainedY,
+                rotation: constrainedX * 0.15
+            });
+        }
+
+        function endDrag(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            // Count shake if drag distance is significant
+            if (dragDistance > 40) {
+                shakeCount++;
+                
+                // Create shake effect with physics
+                gsap.to(santa, {
+                    x: 0,
+                    y: 0,
+                    rotation: 0,
+                    scale: 1,
+                    duration: 1.2,
+                    ease: 'elastic.out(1, 0.3)',
+                    onComplete: () => {
+                        // Add bouncing effect
+                        gsap.to(santa, {
+                            y: -25,
+                            duration: 0.5,
+                            repeat: 1,
+                            yoyo: true,
+                            ease: 'power2.out'
+                        });
+                    }
+                });
+                
+                // Add flying particles effect
+                createFlyingParticles();
+                
+                // Check if enough shakes to drop gift
+                if (shakeCount >= 3) {
+                    setTimeout(() => {
+                        dropGift();
+                    }, 1000);
+                }
+            } else {
+                // Return to original position smoothly
+                gsap.to(santa, {
+                    x: 0,
+                    y: 0,
+                    rotation: 0,
+                    scale: 1,
+                    duration: 0.6,
+                    ease: 'back.out(1.7)'
+                });
             }
-        });
+            
+            dragDistance = 0;
+        }
+
+        function createFlyingParticles() {
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 6px;
+                    height: 6px;
+                    background: #ff6b35;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 1000;
+                `;
+                
+                const santaRect = santa.getBoundingClientRect();
+                particle.style.left = santaRect.left + santaRect.width / 2 + 'px';
+                particle.style.top = santaRect.top + santaRect.height / 2 + 'px';
+                
+                document.body.appendChild(particle);
+
+                gsap.to(particle, {
+                    x: (Math.random() - 0.5) * 150,
+                    y: (Math.random() - 0.5) * 150,
+                    opacity: 0,
+                    scale: 0,
+                    duration: 0.8,
+                    ease: 'power2.out',
+                    onComplete: () => particle.remove()
+                });
+            }
+        }
 
         function dropGift() {
             // Gift drop animation
@@ -1613,7 +1841,7 @@
                 opacity: 1,
                 scale: 1,
                 y: 0,
-                duration: 0.8,
+                duration: 1,
                 ease: 'bounce.out',
                 onComplete: () => {
                     // Add sparkle effect
@@ -1622,7 +1850,7 @@
                     // Pulsing glow effect
                     gsap.to(giftBox, {
                         boxShadow: '0 0 50px rgba(255, 107, 53, 0.8)',
-                        duration: 1,
+                        duration: 1.5,
                         repeat: -1,
                         yoyo: true,
                         ease: 'power2.inOut'
@@ -1634,12 +1862,12 @@
         }
 
         function createSparkles() {
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 12; i++) {
                 const sparkle = document.createElement('div');
                 sparkle.style.cssText = `
                     position: absolute;
-                    width: 6px;
-                    height: 6px;
+                    width: 8px;
+                    height: 8px;
                     background: #ff6b35;
                     border-radius: 50%;
                     pointer-events: none;
@@ -1653,18 +1881,18 @@
                 document.body.appendChild(sparkle);
 
                 gsap.to(sparkle, {
-                    x: (Math.random() - 0.5) * 200,
-                    y: (Math.random() - 0.5) * 200,
+                    x: (Math.random() - 0.5) * 250,
+                    y: (Math.random() - 0.5) * 250,
                     opacity: 0,
                     scale: 0,
-                    duration: 1,
+                    duration: 1.2,
                     ease: 'power2.out',
                     onComplete: () => sparkle.remove()
                 });
             }
         }
 
-        // Gift box click to show resume - Fixed double-click issue
+        // Gift box click to show resume
         giftBox.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -1676,7 +1904,7 @@
             gsap.to(giftBox, {
                 rotationY: 360,
                 scale: 1.3,
-                duration: 0.6,
+                duration: 0.8,
                 ease: 'back.out(1.7)',
                 onComplete: () => {
                     showResume();
@@ -1697,19 +1925,30 @@
         function showResume() {
             resumeModal.classList.add('active');
             
-            // Animate resume sections
-            gsap.from('.resume-section', {
+            // Reset all resume animations first
+            gsap.set('.resume-section', { y: 0, opacity: 1 });
+            gsap.set('.resume-container .skill-item', { scale: 1, opacity: 1 });
+            
+            // Animate resume sections with proper targeting
+            gsap.fromTo('.resume-section', {
                 y: 30,
-                opacity: 0,
+                opacity: 0
+            }, {
+                y: 0,
+                opacity: 1,
                 duration: 0.6,
                 stagger: 0.1,
                 ease: 'power3.out',
                 delay: 0.2
             });
 
-            gsap.from('.skill-item', {
+            // Animate skill items in resume modal specifically
+            gsap.fromTo('.resume-container .skill-item', {
                 scale: 0,
-                opacity: 0,
+                opacity: 0
+            }, {
+                scale: 1,
+                opacity: 1,
                 duration: 0.4,
                 stagger: 0.05,
                 ease: 'back.out(1.7)',
@@ -1717,87 +1956,32 @@
             });
         }
 
-        // Download Resume Function
+        // Download Resume Function - Fixed to download from Google Drive
         function downloadResume() {
-            // Create a data URI for the PDF download
-            const resumeData = {
-                name: "Gaurav Kumar",
-                title: "Software Developer",
-                contact: {
-                    phone: "+91-9162824140",
-                    email: "gauravksingh498@gmail.com",
-                    location: "Laxmi Nagar, New Delhi"
-                }
-            };
+            // Google Drive direct download link
+            const driveFileId = '1roC8XOG6P_FLeDoqrQpS4BBKcLaAeSaY';
+            const downloadUrl = `https://drive.google.com/uc?export=download&id=${driveFileId}`;
             
-            // For demo purposes, we'll create a simple text file
-            // In a real application, you would generate a proper PDF
-            const resumeContent = `
-GAURAV KUMAR
-Software Developer
-
-Contact Information:
-Phone: +91-9162824140
-Email: gauravksingh498@gmail.com
-Location: Laxmi Nagar, New Delhi
-
-ABOUT ME
-A results-driven Software Developer with a solid foundation in AI/ML and electronics. Passionate about full-stack development and building robust, scalable backend systems. Experienced in delivering efficient web applications with clean, maintainable code. Eager to embrace new technologies and continuously enhance technical expertise.
-
-WORK EXPERIENCE
-
-Software Developer | Web Mobril Technology Pvt Ltd, Noida-63 | Feb 2025 - Present
-- Developed and maintained scalable web applications using modern technologies
-- Designed and implemented RESTful APIs for seamless data integration
-- Designed relational database schemas using Django ORM with PostgreSQL
-
-Fullstack Developer | Vocso Technology Pvt Ltd, Faridabad | Sep 2024 - Jan 2025
-- Developed full-stack web applications using React.js and Node.js & Strapi
-- Designed and integrated RESTful APIs for seamless communication
-
-Backend Developer Intern | McKinley Rice Pvt Ltd, Noida | Jan 2024 - Aug 2024
-- Designed scalable APIs for real-time chat application using NestJS and MongoDB
-- Integrated AWS S3 for secure storage and retrieval of media files
-
-EDUCATION
-Bachelor's Degree | Chandigarh Group of Colleges, Jhanjeri, Mohali | 2021 - 2024
-Diploma | CRRIT Kanjhawala, New Delhi | 2017 - 2020
-12th Grade | P.N College Parsa, Saran, Bihar | 2015 - 2016
-
-TECHNICAL SKILLS
-JavaScript, Python, React, Next.js, Node.js, Express.js, NestJS, Django, HTML, CSS, Bootstrap, Tailwind, MongoDB, PostgreSQL, AWS S3, Git, GitHub, Strapi
-
-PROJECTS
-- Shop-Karlo: E-commerce platform with full shopping cart functionality
-- Invoice Generator: Professional invoice generation system with PDF export
-- My-Tube: Video streaming platform with upload and playback features
-
-ACHIEVEMENTS
-- 3rd Prize Engineer's Day Competition, CGC Jhanjeri
-- International Coding Challenge Participant, IIT Roorkee
-- Freelance Web Application Designer
-            `;
-
-            // Create and download the file
-            const blob = new Blob([resumeContent], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
+            // Create a temporary anchor element to trigger download
             const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Gaurav_Kumar_Resume.txt';
+            a.href = downloadUrl;
+            a.download = 'Gaurav_Kumar_Resume.pdf';
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
             
             // Show success message
-            const originalText = event.target.innerHTML;
-            event.target.innerHTML = '<span>✅</span> Downloaded!';
-            event.target.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
+            const button = event.target.closest('.download-resume');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span>✅</span> Opening Download...';
+            button.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
             
             setTimeout(() => {
-                event.target.innerHTML = originalText;
-                event.target.style.background = 'linear-gradient(135deg, #ff6b35, #f7931e)';
-            }, 2000);
+                button.innerHTML = originalText;
+                button.style.background = 'linear-gradient(135deg, #ff6b35, #f7931e)';
+            }, 3000);
         }
 
         // Close resume modal
@@ -1816,6 +2000,36 @@ ACHIEVEMENTS
             if (e.target === resumeModal) {
                 resumeModal.classList.remove('active');
             }
+        });
+
+        // Fixed Navigation Scrolling
+        document.querySelectorAll('.nav-menu a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                
+                // Skip resume link and handle section navigation
+                if (this.classList.contains('resume-link')) {
+                    return;
+                }
+                
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    
+                    const targetId = href.substring(1);
+                    const target = document.getElementById(targetId);
+                    
+                    if (target) {
+                        gsap.to(window, {
+                            duration: 1.5,
+                            scrollTo: {
+                                y: target,
+                                offsetY: 100
+                            },
+                            ease: 'power2.inOut'
+                        });
+                    }
+                }
+            });
         });
 
         // Scroll Animations
@@ -1890,8 +2104,8 @@ ACHIEVEMENTS
                 );
             });
 
-            // Skills grid
-            gsap.utils.toArray('.skill-item').forEach((skill, i) => {
+            // Skills grid (only for the main skills section, not resume)
+            gsap.utils.toArray('#skills .skill-item').forEach((skill, i) => {
                 gsap.fromTo(skill,
                     { 
                         opacity: 0, 
@@ -1960,23 +2174,6 @@ ACHIEVEMENTS
             );
         }
 
-        // Smooth scrolling navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                if (this.getAttribute('href').startsWith('#') && this.getAttribute('href') !== '#' && !this.classList.contains('resume-link')) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        gsap.to(window, {
-                            duration: 1.2,
-                            scrollTo: { y: target, offsetY: 80 },
-                            ease: 'power2.inOut'
-                        });
-                    }
-                }
-            });
-        });
-
         // Form submission
         document.getElementById('contactForm').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -2029,34 +2226,7 @@ ACHIEVEMENTS
             initLoader();
         });
 
-        // Intersection Observer for additional animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        // Observe all sections
-        document.querySelectorAll('.section').forEach(section => {
-            observer.observe(section);
-        });
-
-        // Add scroll progress indicator
-        function updateScrollProgress() {
-            const scrollProgress = window.pageYOffset / (document.body.scrollHeight - window.innerHeight);
-            document.documentElement.style.setProperty('--scroll-progress', scrollProgress);
-        }
-
-        window.addEventListener('scroll', updateScrollProgress);
-
-        // Add some extra interactive elements
+        // Additional interactive elements
         document.addEventListener('mousemove', (e) => {
             const mouseX = e.clientX / window.innerWidth;
             const mouseY = e.clientY / window.innerHeight;
@@ -2072,43 +2242,43 @@ ACHIEVEMENTS
             }
         });
 
-        // Add keyboard navigation
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            const sections = ['#home', '#about', '#projects', '#skills', '#contact'];
+            const sections = ['home', 'about', 'projects', 'skills', 'contact'];
             let currentSection = 0;
             
             // Find current section based on scroll position
-            sections.forEach((selector, index) => {
-                const element = document.querySelector(selector);
-                if (element && element.getBoundingClientRect().top <= 100) {
+            sections.forEach((sectionId, index) => {
+                const element = document.getElementById(sectionId);
+                if (element && element.getBoundingClientRect().top <= 150) {
                     currentSection = index;
                 }
             });
 
             if (e.key === 'ArrowDown' && currentSection < sections.length - 1) {
                 e.preventDefault();
-                const nextSection = document.querySelector(sections[currentSection + 1]);
+                const nextSection = document.getElementById(sections[currentSection + 1]);
                 if (nextSection) {
                     gsap.to(window, {
-                        duration: 1.2,
-                        scrollTo: { y: nextSection, offsetY: 80 },
+                        duration: 1.5,
+                        scrollTo: { y: nextSection, offsetY: 100 },
                         ease: 'power2.inOut'
                     });
                 }
             } else if (e.key === 'ArrowUp' && currentSection > 0) {
                 e.preventDefault();
-                const prevSection = document.querySelector(sections[currentSection - 1]);
+                const prevSection = document.getElementById(sections[currentSection - 1]);
                 if (prevSection) {
                     gsap.to(window, {
-                        duration: 1.2,
-                        scrollTo: { y: prevSection, offsetY: 80 },
+                        duration: 1.5,
+                        scrollTo: { y: prevSection, offsetY: 100 },
                         ease: 'power2.inOut'
                     });
                 }
             }
         });
 
-        // Add touch/swipe gestures for mobile
+        // Touch/swipe gestures for mobile
         let startY = 0;
         let startX = 0;
 
@@ -2125,89 +2295,37 @@ ACHIEVEMENTS
 
             // Only trigger if it's more vertical than horizontal
             if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 50) {
-                const sections = ['#home', '#about', '#projects', '#skills', '#contact'];
+                const sections = ['home', 'about', 'projects', 'skills', 'contact'];
                 let currentSection = 0;
                 
-                sections.forEach((selector, index) => {
-                    const element = document.querySelector(selector);
-                    if (element && element.getBoundingClientRect().top <= 100) {
+                sections.forEach((sectionId, index) => {
+                    const element = document.getElementById(sectionId);
+                    if (element && element.getBoundingClientRect().top <= 150) {
                         currentSection = index;
                     }
                 });
 
                 if (diffY > 0 && currentSection < sections.length - 1) {
                     // Swipe up - go to next section
-                    const nextSection = document.querySelector(sections[currentSection + 1]);
+                    const nextSection = document.getElementById(sections[currentSection + 1]);
                     if (nextSection) {
                         gsap.to(window, {
-                            duration: 1.2,
-                            scrollTo: { y: nextSection, offsetY: 80 },
+                            duration: 1.5,
+                            scrollTo: { y: nextSection, offsetY: 100 },
                             ease: 'power2.inOut'
                         });
                     }
                 } else if (diffY < 0 && currentSection > 0) {
                     // Swipe down - go to previous section
-                    const prevSection = document.querySelector(sections[currentSection - 1]);
+                    const prevSection = document.getElementById(sections[currentSection - 1]);
                     if (prevSection) {
                         gsap.to(window, {
-                            duration: 1.2,
-                            scrollTo: { y: prevSection, offsetY: 80 },
+                            duration: 1.5,
+                            scrollTo: { y: prevSection, offsetY: 100 },
                             ease: 'power2.inOut'
                         });
                     }
                 }
-            }
-        });
-
-        // Add Easter egg - Konami Code
-        const konamiCode = [
-            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
-            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
-            'KeyB', 'KeyA'
-        ];
-        let konamiIndex = 0;
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === konamiCode[konamiIndex]) {
-                konamiIndex++;
-                if (konamiIndex === konamiCode.length) {
-                    // Easter egg activated!
-                    gsap.to('body', {
-                        filter: 'hue-rotate(180deg)',
-                        duration: 2,
-                        yoyo: true,
-                        repeat: 1
-                    });
-                    
-                    // Create rainbow particles
-                    for (let i = 0; i < 50; i++) {
-                        const particle = document.createElement('div');
-                        particle.style.cssText = `
-                            position: fixed;
-                            width: 10px;
-                            height: 10px;
-                            background: hsl(${Math.random() * 360}deg, 70%, 50%);
-                            border-radius: 50%;
-                            pointer-events: none;
-                            z-index: 10000;
-                            left: ${Math.random() * window.innerWidth}px;
-                            top: ${Math.random() * window.innerHeight}px;
-                        `;
-                        document.body.appendChild(particle);
-
-                        gsap.to(particle, {
-                            y: window.innerHeight + 100,
-                            rotation: 360,
-                            duration: 3 + Math.random() * 2,
-                            ease: 'power2.in',
-                            onComplete: () => particle.remove()
-                        });
-                    }
-                    
-                    konamiIndex = 0;
-                }
-            } else {
-                konamiIndex = 0;
             }
         });
     </script>
