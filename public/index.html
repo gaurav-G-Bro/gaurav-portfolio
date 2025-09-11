@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/script.js" defer></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
 
@@ -1988,7 +1989,7 @@
           </ul>
         </div>
 
-        <button class="download-resume" onclick="downloadResume()">
+        <button class="download-resume">
           <span>📄</span>
           Download Full Resume
         </button>
@@ -2442,34 +2443,6 @@
             delay: 0.8,
           }
         );
-      }
-
-      // Download Resume Function - Fixed to download from Google Drive
-      function downloadResume() {
-        // Google Drive direct download link
-        const driveFileId = "1roC8XOG6P_FLeDoqrQpS4BBKcLaAeSaY";
-        const downloadUrl = `https://drive.google.com/uc?export=download&id=${driveFileId}`;
-
-        // Create a temporary anchor element to trigger download
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = "Gaurav_Kumar_Resume.pdf";
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        // Show success message
-        const button = event.target.closest(".download-resume");
-        const originalText = button.innerHTML;
-        button.innerHTML = "<span>✅</span> Opening Download...";
-        button.style.background = "linear-gradient(135deg, #4ecdc4, #44a08d)";
-
-        setTimeout(() => {
-          button.innerHTML = originalText;
-          button.style.background = "linear-gradient(135deg, #ff6b35, #f7931e)";
-        }, 3000);
       }
 
       // Close resume modal
