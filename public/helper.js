@@ -12,6 +12,8 @@ let santaStartX = 0;
 let santaStartY = 0;
 let velocity = { x: 0, y: 0 };
 let dragDistance = 0;
+let isResumeOpen = false; // NEW: Track resume modal state
+let animationFrameId; // NEW: Track animation frame for proper cleanup
 
 const santa = document.getElementById("santaCharacter");
 const giftBox = document.getElementById("giftBox");
@@ -19,6 +21,9 @@ const resumeModal = document.getElementById("resumeModal");
 const loader = document.getElementById("loader");
 const progressBar = document.getElementById("progressBar");
 const percentage = document.getElementById("percentage");
+
+// Mobile detection
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 // Three.js initialization function - FIXED
 function initThreeJS() {
@@ -120,8 +125,15 @@ function initPageAnimations() {
   setupScrollAnimations();
 }
 
+// MODIFIED: Three.js animation with resume modal check
 function animateThreeJS() {
-  requestAnimationFrame(animateThreeJS);
+  animationFrameId = requestAnimationFrame(animateThreeJS);
+
+  // STOP particle animations when resume modal is open, but still render
+  if (isResumeOpen) {
+    renderer.render(scene, camera);
+    return;
+  }
 
   if (particles) {
     particles.rotation.x += 0.0003;
@@ -132,39 +144,109 @@ function animateThreeJS() {
   renderer.render(scene, camera);
 }
 
-// Custom Cursor
-const cursor = document.querySelector(".cursor");
-const cursorTrail = document.querySelector(".cursor-trail");
+// ORIGINAL: Custom Cursor (KEEP AS IS - DON'T BLOCK)
+if (!isMobile) {
+  const cursor = document.querySelector(".cursor");
+  const cursorTrail = document.querySelector(".cursor-trail");
 
-document.addEventListener("mousemove", (e) => {
-  gsap.to(cursor, {
-    x: e.clientX - 4,
-    y: e.clientY - 4,
-    duration: 0.1,
+  document.addEventListener("mousemove", (e) => {
+    gsap.to(cursor, {
+      x: e.clientX - 4,
+      y: e.clientY - 4,
+      duration: 0.1,
+    });
+    gsap.to(cursorTrail, {
+      x: e.clientX - 15,
+      y: e.clientY - 15,
+      duration: 0.3,
+    });
   });
-  gsap.to(cursorTrail, {
-    x: e.clientX - 15,
-    y: e.clientY - 15,
+
+  // Add cursor hover effects - MODIFIED: only block when interacting with santa/gift
+  const hoverElements = document.querySelectorAll(
+    "a, button, .santa-character, .gift-box, .project-card"
+  );
+  hoverElements.forEach((el) => {
+    el.addEventListener("mouseenter", () => {
+      // Only block santa/gift hover effects when resume is open
+      if (isResumeOpen && (el.classList.contains('santa-character') || el.classList.contains('gift-box'))) {
+        return;
+      }
+      gsap.to(cursor, { scale: 2, duration: 0.3 });
+      gsap.to(cursorTrail, { scale: 1.5, duration: 0.3 });
+    });
+    el.addEventListener("mouseleave", () => {
+      // Only block santa/gift hover effects when resume is open
+      if (isResumeOpen && (el.classList.contains('santa-character') || el.classList.contains('gift-box'))) {
+        return;
+      }
+      gsap.to(cursor, { scale: 1, duration: 0.3 });
+      gsap.to(cursorTrail, { scale: 1, duration: 0.3 });
+    });
+  });
+}
+
+// Enhanced Santa Draggable Physics System + Double Click
+let santaClickCount = 0;
+let santaClickTimeout;
+
+// Santa double-click handler
+santa.addEventListener("click", (e) => {
+  if (isResumeOpen) return; // BLOCK santa interactions when resume is open
+  
+  e.preventDefault();
+  e.stopPropagation();
+  
+  santaClickCount++;
+  
+  if (santaClickCount === 1) {
+    // First click - start timeout for double-click detection
+    santaClickTimeout = setTimeout(() => {
+      // Single click - just add a small bounce effect
+      if (santaClickCount === 1) {
+        gsap.to(santa, {
+          scale: 1.05,
+          duration: 0.2,
+          ease: "back.out(1.7)",
+          yoyo: true,
+          repeat: 1,
+        });
+      }
+      santaClickCount = 0;
+    }, 300); // 300ms window for double-click
+    
+  } else if (santaClickCount === 2) {
+    // Double click detected - clear timeout and drop gift
+    clearTimeout(santaClickTimeout);
+    santaClickCount = 0;
+    
+    // Trigger gift drop immediately on double-click
+    triggerGiftDrop();
+  }
+});
+
+function triggerGiftDrop() {
+  if (giftBox.style.opacity === "1" || isResumeOpen) return;
+  
+  // Create celebration effect
+  gsap.to(santa, {
+    scale: 1.2,
     duration: 0.3,
+    ease: "back.out(1.7)",
+    yoyo: true,
+    repeat: 1,
   });
-});
+  
+  // Add flying particles effect
+  createFlyingParticles();
+  
+  // Drop the gift
+  dropGift();
+  
+  // Reset shake count
+  shakeCount = 0;
+}
 
-// Add cursor hover effects
-const hoverElements = document.querySelectorAll(
-  "a, button, .santa-character, .gift-box, .project-card"
-);
-hoverElements.forEach((el) => {
-  el.addEventListener("mouseenter", () => {
-    gsap.to(cursor, { scale: 2, duration: 0.3 });
-    gsap.to(cursorTrail, { scale: 1.5, duration: 0.3 });
-  });
-  el.addEventListener("mouseleave", () => {
-    gsap.to(cursor, { scale: 1, duration: 0.3 });
-    gsap.to(cursorTrail, { scale: 1, duration: 0.3 });
-  });
-});
-
-// Enhanced Santa Draggable Physics System
 santa.addEventListener("mousedown", startDrag);
 santa.addEventListener("touchstart", startDrag);
 document.addEventListener("mousemove", drag);
@@ -173,6 +255,8 @@ document.addEventListener("mouseup", endDrag);
 document.addEventListener("touchend", endDrag);
 
 function startDrag(e) {
+  if (isResumeOpen) return; // BLOCK only santa interactions when resume is open
+  
   e.preventDefault();
   isDragging = true;
 
@@ -202,7 +286,7 @@ function startDrag(e) {
 }
 
 function drag(e) {
-  if (!isDragging) return;
+  if (!isDragging || isResumeOpen) return; // BLOCK only drag when resume is open
   e.preventDefault();
 
   const clientX = e.type.includes("touch")
@@ -235,7 +319,7 @@ function drag(e) {
 }
 
 function endDrag(e) {
-  if (!isDragging) return;
+  if (!isDragging || isResumeOpen) return; // BLOCK only drag when resume is open
   isDragging = false;
 
   // Count shake if drag distance is significant
@@ -287,6 +371,8 @@ function endDrag(e) {
 }
 
 function createFlyingParticles() {
+  if (isResumeOpen) return; // BLOCK particle creation when resume is open
+  
   for (let i = 0; i < 8; i++) {
     const particle = document.createElement("div");
     particle.style.cssText = `
@@ -318,6 +404,8 @@ function createFlyingParticles() {
 }
 
 function dropGift() {
+  if (isResumeOpen) return; // BLOCK gift drop when resume is open
+  
   // Gift drop animation
   gsap.to(giftBox, {
     opacity: 1,
@@ -344,6 +432,8 @@ function dropGift() {
 }
 
 function createSparkles() {
+  if (isResumeOpen) return; // BLOCK sparkle creation when resume is open
+  
   for (let i = 0; i < 12; i++) {
     const sparkle = document.createElement("div");
     sparkle.style.cssText = `
@@ -374,38 +464,96 @@ function createSparkles() {
   }
 }
 
-// Gift box click to show resume
+// Gift box single-click and double-click to show resume
+let giftClickCount = 0;
+let giftClickTimeout;
+
 giftBox.addEventListener("click", (e) => {
+  if (isResumeOpen) return; // BLOCK gift box interaction when resume is open
+  
   e.preventDefault();
   e.stopPropagation();
 
-  // Prevent multiple clicks
+  // Prevent multiple clicks during animation
   if (isGiftClicked) return;
-  isGiftClicked = true;
 
-  gsap.to(giftBox, {
-    rotationY: 360,
-    scale: 1.3,
-    duration: 0.8,
-    ease: "back.out(1.7)",
-    onComplete: () => {
-      showResume();
-      gsap.to(giftBox, {
-        scale: 1,
-        duration: 0.3,
-        onComplete: () => {
-          // Reset click flag after animation
-          setTimeout(() => {
-            isGiftClicked = false;
-          }, 500);
-        },
-      });
-    },
-  });
+  giftClickCount++;
+  
+  if (giftClickCount === 1) {
+    // First click - start timeout for double-click detection
+    giftClickTimeout = setTimeout(() => {
+      // Single click - open resume after short delay
+      if (giftClickCount === 1) {
+        isGiftClicked = true;
+        
+        gsap.to(giftBox, {
+          rotationY: 180,
+          scale: 1.15,
+          duration: 0.6,
+          ease: "back.out(1.7)",
+          onComplete: () => {
+            showResume();
+            gsap.to(giftBox, {
+              scale: 1,
+              rotationY: 0,
+              duration: 0.3,
+              onComplete: () => {
+                setTimeout(() => {
+                  isGiftClicked = false;
+                }, 300);
+              },
+            });
+          },
+        });
+      }
+      giftClickCount = 0;
+    }, 250); // 250ms window for double-click detection
+    
+  } else if (giftClickCount === 2) {
+    // Double click detected - clear timeout and open resume with full animation
+    clearTimeout(giftClickTimeout);
+    giftClickCount = 0;
+    isGiftClicked = true;
+
+    gsap.to(giftBox, {
+      rotationY: 360,
+      scale: 1.3,
+      duration: 0.8,
+      ease: "back.out(1.7)",
+      onComplete: () => {
+        showResume();
+        gsap.to(giftBox, {
+          scale: 1,
+          rotationY: 0,
+          duration: 0.3,
+          onComplete: () => {
+            setTimeout(() => {
+              isGiftClicked = false;
+            }, 500);
+          },
+        });
+      },
+    });
+  }
 });
 
+// MODIFIED: Show resume with proper state management
 function showResume() {
+  isResumeOpen = true; // SET resume state to open
+  
+  // STOP all background santa/gift interactions and animations
+  gsap.killTweensOf(santa);
+  gsap.killTweensOf(giftBox);
+  
+  // STOP any particle generation and remove existing ones
+  const existingParticles = document.querySelectorAll('div[style*="position: absolute"][style*="background: #ff6b35"]');
+  existingParticles.forEach(particle => {
+    gsap.killTweensOf(particle);
+    particle.remove();
+  });
+
   resumeModal.classList.add("active");
+  document.body.style.overflow = 'hidden'; // Disable background scroll
 
   // Reset all resume animations first
   gsap.set(".resume-section", { y: 0, opacity: 1 });
@@ -446,10 +594,27 @@ function showResume() {
   );
 }
 
-// Close resume modal
-document.getElementById("closeResume").addEventListener("click", () => {
+// MODIFIED: Close resume with proper state management
+function closeResume() {
+  isResumeOpen = false; // RESET resume state
+  
   resumeModal.classList.remove("active");
-});
+  document.body.style.overflow = 'auto'; // Restore background scroll
+  
+  // Clear any GSAP tweens that might interfere with scrolling
+  gsap.killTweensOf(window);
+  gsap.killTweensOf(document.body);
+  
+  // RESTART santa animations after a delay
+  setTimeout(() => {
+    if (!isResumeOpen) { // Double check resume is still closed
+      // Add any santa idle animations here if needed
+    }
+  }, 100);
+}
+
+// Close resume modal
+document.getElementById("closeResume").addEventListener("click", closeResume);
 
 // Resume link in nav
 document.querySelector(".resume-link").addEventListener("click", (e) => {
@@ -460,13 +625,22 @@ document.querySelector(".resume-link").addEventListener("click", (e) => {
 // Close modal when clicking outside
 resumeModal.addEventListener("click", (e) => {
   if (e.target === resumeModal) {
-    resumeModal.classList.remove("active");
+    closeResume();
+  }
+});
+
+// ADDED: ESC key to close modal
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && resumeModal.classList.contains("active")) {
+    closeResume();
   }
 });
 
 // Fixed Navigation Scrolling
 document.querySelectorAll(".nav-menu a").forEach((anchor) => {
   anchor.addEventListener("click", function (e) {
+    if (isResumeOpen) return; // BLOCK navigation when resume is open
+    
     const href = this.getAttribute("href");
 
     // Skip resume link and handle section navigation
@@ -736,8 +910,10 @@ function showStatus(message, type) {
   }, 5000);
 }
 
-// Parallax effect for hero section
+// MODIFIED: Parallax effect with resume modal check
 window.addEventListener("scroll", () => {
+  if (isResumeOpen) return; // BLOCK parallax when resume is open
+  
   const scrolled = window.pageYOffset;
   const heroContent = document.querySelector("#heroContent");
 
@@ -764,8 +940,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initLoader();
 });
 
-// Additional interactive elements
+// MODIFIED: Additional interactive elements with resume modal check
 document.addEventListener("mousemove", (e) => {
+  if (isResumeOpen) return; // BLOCK particle mouse effects when resume is open
+  
   const mouseX = e.clientX / window.innerWidth;
   const mouseY = e.clientY / window.innerHeight;
 
@@ -780,8 +958,15 @@ document.addEventListener("mousemove", (e) => {
   }
 });
 
-// Keyboard navigation
+// MODIFIED: Keyboard navigation with resume modal check
 document.addEventListener("keydown", (e) => {
+  if (isResumeOpen && e.key === "Escape") {
+    closeResume();
+    return;
+  }
+  
+  if (isResumeOpen) return; // BLOCK keyboard navigation when resume is open
+  
   const sections = ["home", "about", "projects", "skills", "contact"];
   let currentSection = 0;
 
@@ -820,16 +1005,19 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// Touch/swipe gestures for mobile
+// MODIFIED: Touch/swipe gestures for mobile with resume modal check
 let startY = 0;
 let startX = 0;
 
 document.addEventListener("touchstart", (e) => {
+  if (isResumeOpen) return; // BLOCK touch gestures when resume is open
   startY = e.touches[0].clientY;
   startX = e.touches[0].clientX;
 });
 
 document.addEventListener("touchend", (e) => {
+  if (isResumeOpen) return; // BLOCK touch gestures when resume is open
+  
   const endY = e.changedTouches[0].clientY;
   const endX = e.changedTouches[0].clientX;
   const diffY = startY - endY;

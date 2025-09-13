@@ -57,7 +57,14 @@ mongoose.connect(MONGODB_URI)
 })
 .catch((error) => {
     console.error('MongoDB connection error:', error);
-    process.exit(1);
+    mongoose.connect(MONGODB_URI)
+    .then(()=> {
+        console.log("Trying again to connect with the mongodb server");
+    })
+    .catch((error)=> {
+        console.log("2nd try failed to connect with mongodb", error);
+        process.exit(1);
+    })
 });
 
 // Contact form schema
